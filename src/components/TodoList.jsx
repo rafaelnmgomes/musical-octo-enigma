@@ -1,88 +1,140 @@
-import React, { useState } from 'react'
-import { observer } from 'mobx-react-lite'
-import styled from 'styled-components'
-import { observable } from 'mobx';
-import { v4 as uuid} from 'uuid';
+import { observer } from "mobx-react-lite";
+import React from "react";
+import { toast } from "react-hot-toast";
+import styled from "styled-components";
+import store from "../store/todoStore";
+import TodoListItem from "./TodoListItem";
 
-import TodoListItem from './TodoListItem'
+const Title = styled.h1`
+  font-size: 3rem;
+  color: #000;
+`;
 
+const Wrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+`;
 
-function TodoList({ className }) {
-    const [ store ] = useState(createTodoStore);
+const ListWrapper = styled.div`
+  width: 60%;
+`;
 
-    return (
-        <div className={className}>
-            <header>
-                <h1 className="title">Ratehub TODO Exercise</h1>
-            </header>
-            <section>
-                <ul>
-                    {store.activeItems.map(item => (
-                        <TodoListItem
-                            key={item.id}
-                            name={item.name}
-                            isComplete={item.isComplete}
-                            onComplete={() => store.setCompleted(item.id)}
-                            onChange={(e) => store.setItemName(item.id, e.target.value)}
-                        />
-                    ))}
-                </ul>
-                <button onClick={store.addItem}>
-                    Add New Item
-                </button>
-            </section>
-            <footer>
-                <h2 className="completedTitle">List of Complete Items</h2>
-                <ul>
-                    {store.completedItems.map(item => (
-                        <li key={item.id}>
-                            {item.name}
-                        </li>
-                    ))}
-                </ul>
-            </footer>
-        </div>
-    )
-}
+const ListTitle = styled.h2`
+  text-align: center;
+`;
 
-function createTodoStore() {
-    const self = observable({
-        items: [{
-            id: uuid(),
-            name: "Sample item",
-            isComplete: false,
-        }],
+const NewItemButton = styled.button`
+  background-color: #4caf50;
+  color: #fff;
+  padding: 10px 20px;
+  border: none;
+  cursor: pointer;
+  border-radius: 5%;
+`;
 
-        get activeItems() {
-            return self.items.filter(i => !i.isComplete);
-        },
-        get completedItems() {
-            return self.items.filter(i => i.isComplete);
-        },
+const ButtonWrapper = styled.div`
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+`;
 
-        addItem() {
-            self.items.push({
-                id: uuid(),
-                name: `Item ${self.items.length}`,
-            });
-        },
-        setItemName(id, name) {
-            const item = self.items.find(i => i.id === id);
-            item.name = name;
-        },
-        setCompleted(id) {
-            const item = self.items.find(i => i.id === id);
-            item.isComplete = true;
-        },
-    })
+const Footer = styled.footer`
+  max-width: 80%;
+  display: flex;
+  flex-direction: column;
+  flex-wrap: wrap;
+  justify-content: space-around;
+`;
 
-    return self;
-}
+const FilterGroup = styled.div`
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+  flex-wrap: wrap;
+`;
 
-export default styled(observer(TodoList))`
-    background-color: lightgray;
+const FilterButton = styled.button`
+  background-color: ${(props) => (props.selected ? "#00aaf8" : "#ccc")};
+  color: #fff;
+  padding: 10px 20px;
+  border-radius: 5%;
+  border: none;
+  cursor: pointer;
+  margin: 5px;
+`;
 
-    .title {
-        color: orange;
-    }
-`
+const TodoList = observer(() => {
+  const handleAddItem = () => {
+    store.addItem();
+    toast.success("Item added successfully!");
+  };
+
+  return (
+    <Wrapper>
+      <header>
+        <Title>Ratehub TODO Exercise</Title>
+      </header>
+      <ListWrapper>
+        <ListTitle>Todo Items</ListTitle>
+        <ul>
+          {store.filteredItems.map((item) => (
+            <TodoListItem key={item.id} item={item} store={store} />
+          ))}
+        </ul>
+        <ButtonWrapper>
+          <NewItemButton onClick={handleAddItem}>Add New Item</NewItemButton>
+        </ButtonWrapper>
+      </ListWrapper>
+      <Footer>
+        <FilterGroup>
+          <h3>Filter by Tags:</h3>
+          {store.allTags.map((tag) => (
+            <FilterButton
+              key={tag}
+              onClick={() => store.setFilterTag(tag)}
+              selected={store.filterTag === tag}
+            >
+              {tag}
+            </FilterButton>
+          ))}
+          <FilterButton
+            onClick={() => store.setFilterTag(null)}
+            selected={store.filterTag === null}
+          >
+            Clear Filter
+          </FilterButton>
+        </FilterGroup>
+        <FilterGroup>
+          <h3>Filter by Status:</h3>
+          <FilterButton
+            onClick={() => store.setFilterStatus("incomplete")}
+            selected={store.filterStatus === "incomplete"}
+          >
+            Incomplete
+          </FilterButton>
+          <FilterButton
+            onClick={() => store.setFilterStatus("in-progress")}
+            selected={store.filterStatus === "in-progress"}
+          >
+            In Progress
+          </FilterButton>
+          <FilterButton
+            onClick={() => store.setFilterStatus("complete")}
+            selected={store.filterStatus === "complete"}
+          >
+            Complete
+          </FilterButton>
+          <FilterButton
+            onClick={() => store.setFilterStatus(null)}
+            selected={store.filterStatus === null}
+          >
+            Clear Status Filter
+          </FilterButton>
+        </FilterGroup>
+      </Footer>
+    </Wrapper>
+  );
+});
+
+export default TodoList;
