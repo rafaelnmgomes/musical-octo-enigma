@@ -166,6 +166,7 @@ const TodoListItem = observer(({ item, store, getStatusColor }) => {
         <Select
           value={item.status}
           onChange={(e) => handleStatusChange(e.target.value)}
+          aria-label="Status"
         >
           <option value="incomplete">Incomplete</option>
           <option value="in-progress">In Progress</option>
@@ -175,13 +176,22 @@ const TodoListItem = observer(({ item, store, getStatusColor }) => {
           onChange={handleItemNameChange}
           onBlur={handleItemNameBlur}
           value={item.name}
+          aria-label="Item Name"
         />
-        <Button onClick={handleDeleteItem}>Delete</Button>
+        <Button onClick={handleDeleteItem} aria-label="Delete Item">
+          Delete
+        </Button>
       </ItemTop>
       <Tags>
         {item.tags.map((tag) => (
           <Tag key={tag}>
-            {tag} <TagButton onClick={() => handleRemoveTag(tag)}>x</TagButton>
+            {tag}
+            <TagButton
+              onClick={() => handleRemoveTag(tag)}
+              aria-label={`Remove ${tag} tag`}
+            >
+              x
+            </TagButton>
           </Tag>
         ))}
       </Tags>
@@ -189,10 +199,13 @@ const TodoListItem = observer(({ item, store, getStatusColor }) => {
         <TagInput
           value={newTag}
           onChange={(e) => setNewTag(e.target.value)}
-          onKeyUp={handleKeyPress}
+          onKeyDown={handleKeyPress}
           placeholder="Add tag"
+          aria-label="Add a new tag"
         />
-        <Button onClick={handleAddTag}>Add Tag</Button>
+        <Button onClick={handleAddTag} aria-label="Add Tag">
+          Add Tag
+        </Button>
       </TagInputWrapper>
     </ListItem>
   );

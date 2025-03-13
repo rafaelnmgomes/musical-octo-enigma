@@ -15,7 +15,7 @@ function createTodoStore() {
     filterTag: null,
     filterStatus: null,
 
-    // Fetching
+    // Computed values
     get filteredItems() {
       return self.items.filter((i) => {
         const matchesTag = !self.filterTag || i.tags.includes(self.filterTag);
@@ -49,56 +49,41 @@ function createTodoStore() {
     },
     setItemName(id, name) {
       const item = self.items.find((i) => i.id === id);
+      if (!item) return;
       item.name = name;
-    },
-    setCompleted(id) {
-      const item = self.items.find((i) => i.id === id);
-      item.isComplete = true;
     },
     setDeleted(id) {
       self.items = self.items.filter((i) => i.id !== id);
     },
     setStatus(id, status) {
       const item = self.items.find((i) => i.id === id);
+      if (!item) return;
       item.status = status;
     },
     addTag(id, tag) {
       const item = self.items.find((i) => i.id === id);
-      if (item && !item.tags.includes(tag)) {
-        item.tags.push(tag);
-      }
+      if (!item || item.tags.includes(tag)) return;
+      item.tags.push(tag);
     },
     removeTag(id, tag) {
       const item = self.items.find((i) => i.id === id);
-      if (item) {
-        item.tags = item.tags.filter((t) => t !== tag);
-      }
+      if (!item) return;
+      item.tags = item.tags.filter((t) => t !== tag);
     },
     setFilterTag(tag) {
-      if (self.filterTag === tag) {
-        self.filterTag = null;
-        return;
-      }
-      self.filterTag = tag;
+      self.filterTag = self.filterTag === tag ? null : tag;
     },
     setFilterStatus(status) {
-      if (self.filterStatus === status) {
-        self.filterStatus = null;
-        return;
-      }
-      self.filterStatus = status;
+      self.filterStatus = self.filterStatus === status ? null : status;
     },
     reorderItems(fromIndex, toIndex) {
       if (fromIndex === toIndex) return;
 
-      const movingItem = self.filteredItems[fromIndex];
-      const originalIndex = self.items.findIndex((i) => i.id === movingItem.id);
+      const movingItem = self.items[fromIndex];
+      if (!movingItem) return;
 
-      if (originalIndex === -1) return;
-
-      const [item] = self.items.splice(originalIndex, 1);
-
-      self.items.splice(toIndex, 0, item);
+      self.items.splice(fromIndex, 1);
+      self.items.splice(toIndex, 0, movingItem);
     },
   });
 

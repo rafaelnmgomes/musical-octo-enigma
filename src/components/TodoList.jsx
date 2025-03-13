@@ -58,9 +58,7 @@ const FilterGroup = styled.div`
 
 const FilterButton = styled.button`
   background-color: ${(props) =>
-    props.selected
-      ? getStatusColor(props.status) || statusColors.default
-      : "#ccc"};
+    props.selected ? getStatusColor(props.status) : "#ccc"};
   color: #fff;
   padding: 10px 20px;
   border-radius: 5%;
@@ -174,6 +172,7 @@ const TodoList = observer(() => {
               onClick={() => store.setFilterStatus(status)}
               selected={store.filterStatus === status}
               status={status}
+              aria-pressed={store.filterStatus === status}
             >
               {status.charAt(0).toUpperCase() + status.slice(1)}
             </FilterButton>
