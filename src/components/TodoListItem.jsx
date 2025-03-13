@@ -3,19 +3,6 @@ import React, { useState } from "react";
 import { toast } from "react-hot-toast";
 import styled from "styled-components";
 
-const getStatusColor = (status) => {
-  switch (status) {
-    case "incomplete":
-      return "#f44336";
-    case "in-progress":
-      return "#ff9800";
-    case "complete":
-      return "#4caf50";
-    default:
-      return "#ccc";
-  }
-};
-
 const ListItem = styled.li`
   display: flex;
   flex-direction: column;
@@ -39,7 +26,7 @@ const ItemTop = styled.div`
 const StatusIndicator = styled.div`
   width: 20px;
   height: 20px;
-  background-color: ${(props) => getStatusColor(props.status)};
+  background-color: ${(props) => props.statusColor};
   margin-right: 10px;
   border-radius: 50%;
   transition: background-color 0.5s ease;
@@ -52,7 +39,25 @@ const Select = styled.select`
   border-radius: 5px;
 `;
 
-const Input = styled.input`
+const Title = styled.input`
+  flex-grow: 1;
+  margin-right: 10px;
+  padding: 5px;
+  border: 1px solid transparent;
+  border-radius: 5px;
+  background-color: transparent;
+  transition: border 0.3s ease;
+  font-weight: bold;
+  font-size: 16px;
+
+  &:hover,
+  &:focus {
+    border: 1px solid #ccc;
+    background-color: #fff;
+  }
+`;
+
+const TagInput = styled.input`
   flex-grow: 1;
   margin-right: 10px;
   padding: 5px;
@@ -62,12 +67,17 @@ const Input = styled.input`
 
 const Button = styled.button`
   color: #fff;
+  background-color: #1d73a5;
   padding: 5px 10px;
   border: none;
   cursor: pointer;
   border-radius: 5px;
   margin-right: 10px;
   transition: background-color 0.3s ease;
+
+  :hover {
+    background-color: #174277;
+  }
 `;
 
 const Tags = styled.div`
@@ -98,7 +108,7 @@ const TagInputWrapper = styled.div`
   margin-top: 10px;
 `;
 
-const TodoListItem = observer(({ item, store }) => {
+const TodoListItem = observer(({ item, store, getStatusColor }) => {
   const [newTag, setNewTag] = useState("");
 
   const handleStatusChange = (newStatus) => {
@@ -142,10 +152,17 @@ const TodoListItem = observer(({ item, store }) => {
     toast.success("Tag removed successfully!");
   };
 
+  const handleKeyPress = (e) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      handleAddTag();
+    }
+  };
+
   return (
     <ListItem>
       <ItemTop>
-        <StatusIndicator status={item.status} />
+        <StatusIndicator statusColor={getStatusColor(item.status)} />
         <Select
           value={item.status}
           onChange={(e) => handleStatusChange(e.target.value)}
@@ -154,7 +171,7 @@ const TodoListItem = observer(({ item, store }) => {
           <option value="in-progress">In Progress</option>
           <option value="complete">Complete</option>
         </Select>
-        <Input
+        <Title
           onChange={handleItemNameChange}
           onBlur={handleItemNameBlur}
           value={item.name}
@@ -169,9 +186,10 @@ const TodoListItem = observer(({ item, store }) => {
         ))}
       </Tags>
       <TagInputWrapper>
-        <Input
+        <TagInput
           value={newTag}
           onChange={(e) => setNewTag(e.target.value)}
+          onKeyUp={handleKeyPress}
           placeholder="Add tag"
         />
         <Button onClick={handleAddTag}>Add Tag</Button>

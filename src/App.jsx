@@ -9,13 +9,6 @@ const GlobalStyle = createGlobalStyle`
     font-family: Gordita, sans-serif;
     margin: 0;
     }
-    
-    button {
-        background-color: #1d73a5;
-        :hover {
-            background-color: #174277;
-        }
-    }
     `;
 
 // Get the container element to render into.

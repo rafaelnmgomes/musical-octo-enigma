@@ -48,7 +48,6 @@ function createTodoStore() {
       self.filterTag = null;
     },
     setItemName(id, name) {
-      console.log("🚀 ~ setItemName ~ name:", name);
       const item = self.items.find((i) => i.id === id);
       item.name = name;
     },
@@ -76,10 +75,30 @@ function createTodoStore() {
       }
     },
     setFilterTag(tag) {
+      if (self.filterTag === tag) {
+        self.filterTag = null;
+        return;
+      }
       self.filterTag = tag;
     },
     setFilterStatus(status) {
+      if (self.filterStatus === status) {
+        self.filterStatus = null;
+        return;
+      }
       self.filterStatus = status;
+    },
+    reorderItems(fromIndex, toIndex) {
+      if (fromIndex === toIndex) return;
+
+      const movingItem = self.filteredItems[fromIndex];
+      const originalIndex = self.items.findIndex((i) => i.id === movingItem.id);
+
+      if (originalIndex === -1) return;
+
+      const [item] = self.items.splice(originalIndex, 1);
+
+      self.items.splice(toIndex, 0, item);
     },
   });
 
