@@ -1,6 +1,5 @@
 import React from "react";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
-import { DragDropContext } from "react-beautiful-dnd";
 import TodoList from "./TodoList";
 import store from "../store/todoStore";
 
