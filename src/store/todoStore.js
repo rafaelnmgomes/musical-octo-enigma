@@ -1,6 +1,14 @@
 import { observable } from "mobx";
 import { v4 as uuid } from "uuid";
 
+/**
+ * Create an observable MobX todo store.
+ *
+ * The store exposes state (items, filterTag, filterStatus), computed getters
+ * (filteredItems, activeItems, completedItems, allTags, itemCount) and actions
+ * to add, update, remove, tag, filter, and reorder todo items.
+ * @returns {object} The MobX observable todo store object.
+ */
 function createTodoStore() {
   const self = observable({
     // State
