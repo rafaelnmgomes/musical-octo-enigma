@@ -98,6 +98,8 @@ const getStatusColor = (status) => {
 };
 
 const TodoList = observer(() => {
+  const [searchQuery, setSearchQuery] = React.useState("");
+
   const handleAddItem = () => {
     store.addItem();
     toast.success("Item added successfully!");
@@ -109,24 +111,48 @@ const TodoList = observer(() => {
     store.reorderItems(result.source.index, result.destination.index);
   };
 
+    // Filter the items based on the search query (title, description, tags)
+    const displayedItems = React.useMemo(() => {
+      const q = searchQuery.trim().toLowerCase();
+      if (!q) return store.filteredItems;
+      return store.filteredItems.filter((item) => {
+        const title = (item.title || "").toLowerCase();
+        const desc = (item.description || "").toLowerCase();
+        const tags = Array.isArray(item.tags) ? item.tags.join(" ").toLowerCase() : "";
+        return (
+          title.includes(q) ||
+          desc.includes(q) ||
+          tags.includes(q)
+        );
+      });
+    }, [searchQuery, store.filteredItems]);
+
   return (
     <Wrapper>
       <header>
         <Title>Ratehub TODO Exercise</Title>
-        <Subtitle>Current List count: {store.filteredItems.length}</Subtitle>
+        <Subtitle>Current List count: {displayedItems.length}</Subtitle>
       </header>
       <ListWrapper>
+      <input
+          type="text"
+          placeholder="Search by title, description, or tags..."
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          aria-label="Search todos"
+          style={{ width: "100%", padding: "10px", marginBottom: "12px" }}
+        />
         <DragDropContext onDragEnd={handleDragEnd}>
           <Droppable droppableId="todo-list">
             {(provided) => (
               <List {...provided.droppableProps} ref={provided.innerRef}>
-                {store.filteredItems.length === 0 ? (
+                {displayedItems.length === 0 ? (
                   <Placeholder>
                     No items available. Try changing the filters or adding new
                     items.
                   </Placeholder>
                 ) : (
-                  store.filteredItems.map((item, index) => (
+                  displayedItems.map((item, index) => (
                     <Draggable
                       key={item.id}
                       draggableId={item.id.toString()}
