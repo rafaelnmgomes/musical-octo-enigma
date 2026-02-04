@@ -52,6 +52,8 @@ jest.mock("react-beautiful-dnd", () => ({
 
 describe("TodoList Component", () => {
   beforeEach(() => {
+    jest.clearAllMocks();
+    mockDragEndHandler = null;
     // Reset store to initial state
     store.items = [
       {
