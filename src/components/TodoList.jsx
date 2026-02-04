@@ -113,7 +113,7 @@ const TodoList = observer(() => {
     <Wrapper>
       <header>
         <Title>Ratehub TODO Exercise</Title>
-        <Subtitle>Current List count: {store.itemCount}</Subtitle>
+        <Subtitle>Current List count: {store.filteredItems.length}</Subtitle>
       </header>
       <ListWrapper>
         <DragDropContext onDragEnd={handleDragEnd}>
