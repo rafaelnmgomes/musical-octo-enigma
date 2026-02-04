@@ -35,6 +35,9 @@ function createTodoStore() {
       self.items.forEach((item) => item.tags.forEach((tag) => tags.add(tag)));
       return Array.from(tags);
     },
+    get itemCount() {
+      return self.items.length;
+    },
 
     // Actions
     addItem() {

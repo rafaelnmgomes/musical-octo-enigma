@@ -11,6 +11,12 @@ const Title = styled.h1`
   color: #000;
 `;
 
+const Subtitle = styled.h2`
+  font-size: 1.5rem;
+  color: #666;
+  margin-bottom: 20px;
+`;
+
 const List = styled.ul`
   list-style: none;
   padding: 0;
@@ -107,6 +113,7 @@ const TodoList = observer(() => {
     <Wrapper>
       <header>
         <Title>Ratehub TODO Exercise</Title>
+        <Subtitle>Current List count: {store.itemCount}</Subtitle>
       </header>
       <ListWrapper>
         <DragDropContext onDragEnd={handleDragEnd}>
